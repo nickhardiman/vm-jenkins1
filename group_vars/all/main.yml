@@ -1,0 +1,6 @@
+---
+# Red Hat Subscription Manager
+rhsm_user: my_subscription_name
+rhsm_password: my_subscription_password
+rhsm_pool_id: my_subscription_pool_id
+

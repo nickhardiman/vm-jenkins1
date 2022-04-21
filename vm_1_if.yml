@@ -1,0 +1,44 @@
+---
+
+# copy kickstart file to /var/tmp/
+#
+- name: Template the kickstart file to /var/tmp/
+  ansible.builtin.template:
+    src: "{{ kickstart_template }}"
+    dest: "/var/tmp/{{ host }}.ks"
+    owner: root
+    group: root
+    mode: '0600'
+
+
+# define and launch the guest
+
+# sparse?
+# Not sparse!
+# I've done something wrong here, or in the kickstart file.
+# 
+# If the disk already exists, this command fails with 
+#   ERROR    Disk /var/lib/libvirt/images/my_new_vm.qcow2 is already in use by other guests ['my_new_vm']. 
+#
+- name: create VM, kickstart install
+  ansible.builtin.command:
+    cmd: >
+      virt-install 
+      --name="{{ host }}"
+      --vcpus="{{ cpus }}"
+      --ram="{{ ram }}"
+      --disk="path=/var/lib/libvirt/images/{{ host }}.qcow2,bus=virtio,size=50,sparse=yes"
+      --os-variant="{{ os_variant }}"
+      --network="network={{ if1_network }},mac={{ if1_mac }}"
+      --boot="uefi,hd,menu=on"
+      --location="{{ install_iso }}"
+      --initrd-inject="/var/tmp/{{ host }}.ks"
+      --extra-args="inst.ks=file:/{{ host }}.ks console=tty0 console=ttyS0,115200" 
+      --noautoconsole
+  register: r_virt_install
+
+- name: remove temporary kickstart file
+  ansible.builtin.file:
+    name: "/var/tmp/{{ host }}.ks"
+    state: absent
+

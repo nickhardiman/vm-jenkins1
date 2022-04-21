@@ -1,0 +1,11 @@
+---
+- name: lay the foundation
+  hosts: jenkins_server
+  become: yes
+  gather_facts: no
+  roles:
+    - ansible-target
+
+# more steps to do
+# /Users/nickhardiman/Documents/red-hat/third-party/cloudbees/jenkins-notes.txt
+#

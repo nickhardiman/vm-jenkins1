@@ -1,0 +1,8 @@
+# run
+#   ansible-galaxy install -r roles/requirements.yml 
+# for more information, see
+#   https://galaxy.ansible.com/docs/using/installing.html
+#
+roles:
+  - src: https://github.com/nickhardiman/ansible-target
+

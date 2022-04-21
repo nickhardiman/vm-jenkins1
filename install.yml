@@ -1,0 +1,23 @@
+---
+- name: build jenkins VM
+  hosts: hypervisor
+  become: yes
+  gather_facts: no
+  tasks:
+
+  - name: VM and OS
+    include_tasks: vm_1_if.yml
+    vars:
+      host: jenkins1
+      install_iso: /var/lib/libvirt/images/rhel-8.5-x86_64-dvd.iso
+      os_variant: rhel8.5
+      kickstart_template: "{{ host }}.ks.j2"
+      cpus: 2
+      ram: 4096
+      vol_root: 30
+      # list in host1-libvirt-network.adoc
+      if1_mac: "52:54:00:00:00:18"
+      if1_network: public0
+
+# to do
+# add FQDN to DNS
