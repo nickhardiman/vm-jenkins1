@@ -1,0 +1,54 @@
+= playbook for setting up a new VM.
+
+Dangerously hacky early stage. 
+No main.yml yet, just these playbooks. 
+
+* install.yml. Create the VM, install OS. Uses vm_1_if.yml which runs virt-install. Probably should be a role.
+* configure.yml. Uses https://github.com/nickhardiman/ansible-target to add an ansible user. 
+* remove.yml. Delete the VM. Uses virsh.
+
+== prereqs 
+
+* A physical machine running RHEL 9
+* Libvirt. Script in this repo takes care of setting up libvirt: https://github.com/nickhardiman/machine-host2
+
+== create VM and install OS
+
+!!! not convinced attaching the pool is working, check kickstart
+
+Like this
+```
+ansible-playbook  \
+  -e 'rhsm_user=RH_user'  \
+  -e 'rhsm_password=RH_password' \
+  -e 'rhsm_pool_id=12345'  \
+  --ask-become-pass  \
+  install.yml
+```
+Or like this
+```
+sudo ansible-playbook install.yml  && sudo virsh console antora1
+```
+
+Back out
+```
+sudo ansible-playbook remove.yml  && sudo virsh console antora1
+```
+
+== configure
+
+Logs into the remote host as you.
+Adds an ansible user, which you can then add to ansible.cfg
+```
+export ANSIBLE_HOST_KEY_CHECKING=False
+ansible-playbook --ask-pass --ask-become-pass configure.yml 
+```
+Sample ansible.cfg
+```
+[defaults]
+inventory=./inventory.ini
+remote_user = ansible_user
+private_key_file = /home/you/.ssh/ansible-key.priv
+```
+
+
